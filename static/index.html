@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RiskPanel – Credit Risk Assessment</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="shell">
+
+  <!-- TOP BAR -->
+  <header class="top">
+    <a class="logo" href="#"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 2v7M12 15v7M2 12h7M15 12h7"/></svg>RiskPanel</a>
+    <nav class="pill-nav">
+      <a class="active" href="#top">Dashboard</a>
+      <a href="#assess">Assess</a>
+      <a href="#history">History</a>
+      <span class="status" id="status"><i></i><b>Connecting…</b></span>
+      <span class="avatar">KG</span>
+    </nav>
+    <span class="top-spacer"></span>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero" id="top">
+    <div class="hero-left">
+      <div class="crumb"><button class="round" aria-label="Back" onclick="window.scrollTo({top:0,behavior:'smooth'})">←</button><span>Dashboard/<b>Credit Assessment</b></span></div>
+      <h1>Credit Risk<br>Assessment</h1>
+      <div class="pills">
+        <div class="pill-group"><label>Low risk <em id="lowCount">/0</em></label><div class="track"><div class="fill coral" id="lowFill"></div></div></div>
+        <div class="pill-group"><label>High risk <em id="highCount">/0</em></label><div class="track"><div class="fill blue" id="highFill"></div></div></div>
+      </div>
+    </div>
+
+    <div class="ticker" aria-label="Session stats">
+      <div><span>Assessed</span><strong id="tTotal">0</strong></div>
+      <div><span>Avg probability</span><strong id="tAvg">–</strong></div>
+      <div><span>Threshold</span><strong id="tThr">–</strong></div>
+      <div><span>Approval rate</span><strong id="tRate">–</strong></div>
+    </div>
+
+    <div class="gauge-wrap">
+      <svg class="gauge" viewBox="0 0 400 230" id="gauge" aria-hidden="true">
+        <defs>
+          <linearGradient id="dome" x1="0" y1="0" x2="0" y2="1"><stop offset="0" class="dome-a"/><stop offset="1" stop-color="#dfe6ee" stop-opacity="0"/></linearGradient>
+          <linearGradient id="arc" x1="0" x2="1"><stop offset="0" stop-color="#4b4bf0"/><stop offset="1" stop-color="#3b9cf6"/></linearGradient>
+        </defs>
+        <path class="dome" d="M20 210 A180 180 0 0 1 380 210 Z" fill="url(#dome)"/>
+        <path class="arc-track" id="arcTrack" d="M20 210 A180 180 0 0 1 380 210"/>
+        <path class="arc-prog" id="arcProg" d="M20 210 A180 180 0 0 1 380 210" stroke="url(#arc)"/>
+        <line id="thrTick" class="thr" x1="0" y1="0" x2="0" y2="0"/>
+        <circle id="dot" class="dot" r="8" cx="20" cy="210"/>
+      </svg>
+      <div class="gauge-text">
+        <span>Default probability</span>
+        <strong id="gaugeVal">0.0%</strong>
+        <button class="view" id="viewBtn">View details ↗</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- MAIN PANEL -->
+  <main class="panel" id="assess">
+
+    <!-- FORM -->
+    <article class="card form-card">
+      <div class="card-head"><h2><i class="ico">▮</i>Applicant details</h2>
+        <div class="head-actions"><button class="round" id="resetBtn" title="Reset">↺</button></div>
+      </div>
+      <div class="presets"><span>Try a sample:</span>
+        <button type="button" class="chip" data-preset="low">Steady earner</button>
+        <button type="button" class="chip" data-preset="mid">Mid profile</button>
+        <button type="button" class="chip" data-preset="high">Stretched borrower</button>
+      </div>
+      <form id="form" novalidate>
+        <div class="grid">
+          <label>Age<input type="number" name="person_age" min="18" max="100" value="28" required></label>
+          <label>Annual income ($)<input type="number" name="person_income" min="1" step="500" value="65000" required></label>
+          <label>Home ownership
+            <select name="person_home_ownership"><option>RENT</option><option>OWN</option><option selected>MORTGAGE</option><option>OTHER</option></select></label>
+          <label>Employment length (yrs)<input type="number" name="person_emp_length" min="0" step="0.5" value="5" required></label>
+          <label>Loan purpose
+            <select name="loan_intent"><option>PERSONAL</option><option>EDUCATION</option><option>MEDICAL</option><option>VENTURE</option><option>HOMEIMPROVEMENT</option><option>DEBTCONSOLIDATION</option></select></label>
+          <label>Loan grade
+            <select name="loan_grade"><option>A</option><option selected>B</option><option>C</option><option>D</option><option>E</option><option>F</option><option>G</option></select></label>
+          <label>Loan amount ($)<input type="number" name="loan_amnt" min="1" step="100" value="10000" required></label>
+          <label>Interest rate (%)<input type="number" name="loan_int_rate" min="0" step="0.01" value="10.5" required></label>
+          <label>Loan % of income<input type="number" name="loan_percent_income" value="0.15" readonly tabindex="-1" class="auto"></label>
+          <label>Past default on file
+            <select name="cb_person_default_on_file"><option value="N" selected>No</option><option value="Y">Yes</option></select></label>
+          <label>Credit history (yrs)<input type="number" name="cb_person_cred_hist_length" min="0" value="6" required></label>
+          <button type="submit" class="go" id="submitBtn"><span class="lbl">Assess risk</span><span class="spin"></span></button>
+        </div>
+      </form>
+    </article>
+
+    <!-- LIVE STATS -->
+    <aside class="stats">
+      <div><span>Loan burden</span><strong id="sBurden">15%</strong></div>
+      <div><span>Monthly rate cost</span><strong id="sMonthly">$88</strong></div>
+      <div><span>Credit history</span><strong id="sHist">6 yrs</strong></div>
+    </aside>
+
+    <!-- ANALYST -->
+    <article class="card ai-card" id="result">
+      <div class="card-head"><h2><i class="ico spark">✦</i>Risk Analyst</h2></div>
+      <div class="chat" id="chat">
+        <div class="bubble user" id="userBubble">Should this loan be approved?</div>
+        <div class="reply" id="reply"><span class="muted">Fill in the applicant details and press “Assess risk” to get a verdict from the model.</span></div>
+      </div>
+      <div class="chips" id="modeChips">
+        <button class="chip dark" data-mode="summary">Summary</button>
+        <button class="chip" data-mode="drivers">Risk drivers</button>
+        <button class="chip" data-mode="advice">Next steps</button>
+      </div>
+      <div class="verdict" id="verdict"><span class="tag" id="verdictTag">Waiting</span><span id="verdictText">No assessment yet</span></div>
+    </article>
+
+    <!-- HISTORY -->
+    <article class="card hist-card" id="history">
+      <div class="card-head"><h2><i class="ico">⇄</i>Recent assessments</h2>
+        <div class="head-actions"><button class="round" id="clearBtn" title="Clear history">✕</button></div></div>
+      <ul id="histList"></ul>
+    </article>
+
+    <!-- INDICATORS -->
+    <article class="card ind-card">
+      <div class="card-head"><h2><i class="ico">$</i>Input risk indicators</h2></div>
+      <div class="ind-total"><strong id="indScore">0</strong><span>/100 combined pressure from the inputs</span></div>
+      <div class="segbar" id="segbar"></div>
+      <ul class="ind-list" id="indList"></ul>
+    </article>
+  </main>
+
+  <footer>Predictions come from your trained model and are for decision support only.</footer>
+</div>
+<div class="toast" id="toast" role="status"></div>
+<script src="script.js"></script>
+</body>
+</html>
